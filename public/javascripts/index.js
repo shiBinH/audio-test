@@ -66,9 +66,11 @@ class TestButton extends React.Component {
   }
 }
 
+/*
 const domContainer = document.querySelector('#root');
 const container = (<div>
   <TestButton/>
 </div>);
 ReactDOM.render(container, domContainer);
+*/
 
