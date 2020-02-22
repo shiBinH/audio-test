@@ -14,35 +14,37 @@ class TestButton extends React.Component {
     navigator.permissions.query({name: 'microphone'})
       .then((result) => {
         console.log(`Result: ${result.state}`);
-
-    
-        navigator.mediaDevices.getUserMedia({ audio: true, video: false})
-          .then((mediaStream) => {
-            console.log('Microphone on @@@')
-            
-            const downloadLink = document.getElementById('download');
-            const recordedChunks = [];
-            const mediaRecorder = new MediaRecorder(mediaStream, {mimeType: 'audio/webm'});
-
-            mediaRecorder.addEventListener('dataavailable', function(e) {
-              if (e.data.size > 0) {
-                recordedChunks.push(e.data);
-              }
-            });
-
-            mediaRecorder.addEventListener('stop', function() {
-              console.log("stop() called!")
-              downloadLink.href = URL.createObjectURL(new Blob(recordedChunks));
-              downloadLink.download = 'acetest.mp3';
-            });
-            
-            mediaRecorder.start();
-
-            window.setTimeout(() => {
-              console.log("TIMEOUT FUNCTION CALLED!");
-              mediaRecorder.stop();
-            }, 3000) ;
-          })
+        if (annyang) {
+          console.log("READY");
+                
+          let commands = {
+            'run *dir': (dir) => {    
+              let div = document.createElement('div');
+              div.appendChild(document.createTextNode(`RUNNING ${dir}`));
+              document
+                .getElementById('display')
+                .appendChild(div);
+            },
+            'jump *dir': (dir) => {
+              let div = document.createElement('div');
+              div.appendChild(document.createTextNode(`JUMPING ${dir}`));
+              document
+                .getElementById('display')
+                .appendChild(div);
+            },
+            'jump': () => {
+              let div = document.createElement('div');
+              div.appendChild(document.createTextNode(`JUMPED`));
+              document
+                .getElementById('display')
+                .appendChild(div);
+            }
+          }
+        
+          annyang.addCommands(commands);
+        
+          annyang.start();
+        }
 
           
       })
@@ -64,10 +66,9 @@ class TestButton extends React.Component {
   }
 }
 
-
-
 const domContainer = document.querySelector('#root');
 const container = (<div>
   <TestButton/>
 </div>);
 ReactDOM.render(container, domContainer);
+
